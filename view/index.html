@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<style>
+  .hr-orange {
+  background-color: #fb8c00;
+  height: 3px;
+  border: 0;
+}
+</style>
+  </head>
+<body>
+  <div class="container-fluid">
+    <!-- Content here -->
+    <div id="app">
+    </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<script>
+  Vue.component('member-info', {
+    props:["member", "value", "index"],
+    data: function () {
+      return {
+        count: 0
+      }
+    },
+    computed:{
+      topImageUrl(){
+        return '/static/role' + this.member.gcgKey + ".png"
+      },
+      roleImageUrl(){
+        return '/static/avast' + this.member.gcgKey + ".png"
+      }
+    },
+    template: `
+    <div class="mb-1" >
+      <div v-if="index == 0" class="d-flex flex-column justify-content-center align-items-center" >
+        <div class="">
+          <img class="img-fluid" :src="topImageUrl">
+
+          </div>
+          <div class="d-flex flex-column justify-content-center align-items-center">
+            <div class="h4">{{member.name}}</div>
+            <div class="h2">{{value}}</div>
+          </div>
+      </div>
+        <div v-else class="d-flex p-0 align-items-center">
+          <div class="col-auto pl-0">
+            <span class="badge badge-pill badge-primary">{{index + 1}}</span>
+          </div>
+          <div class="col p-0 d-flex justify-content-center align-items-center">
+            <div class="col-5 p-0">
+              <img class="img-fluid" :src="roleImageUrl">
+            </div>
+            <div class="col-7 px-1 d-flex flex-column justify-content-center align-items-center">
+              <div>{{member.name}}</div>
+              <div class="h2">{{value}}</div>
+            </div>
+          </div>
+        </div>
+        <div  v-if="index == 3" class="w-100">
+          <div class="col-12 p-0">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="col">
+                <div class="hr-orange" />
+              </div>
+              <span class="col-auto title font-weight-bold">前4名</span>
+              <div class="col">
+                <div class="hr-orange" />
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    `
+  })
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!fffffffffff',
+    lastData: {},
+    time: "",
+    member:{
+      1: {
+        name: "林于馨-艾琳·懷特",
+      },
+      2: {
+        name: "陳詩雅-菊理千姬",
+      },
+      3: {
+        name: "林倢-格蘭妮·德拉薩爾",
+      },
+      4: {
+        name: "張羽翎-高奈利亞",
+      },
+      5: {
+        name: "李孟純-洛可可",
+      },
+      6: {
+        name: "劉語晴-麗達·羅梅",
+      },
+      7: {
+        name: "邱品涵-時無瑕",
+      },
+      8: {
+        name: "潘姿怡-時無憂",
+      },
+      9: {
+        name: "曾詩羽-蘇小真",
+      },
+      10: {
+        name: "冼迪琦-伊柯斯·卡里尼亞",
+      },
+      11: {
+        name: "李佳俐-諾拉·沐恩",
+      },
+      12: {
+        name: "蔡亞恩-朱諾·埃蒙斯",
+      },
+    },
+  },
+  methods: {
+    
+    getData(){
+      axios.get("/api").then(res => {
+        console.log(res.data);
+        this.lastData = res.data.data
+        this.time = moment().format("YYYY/MM/DD HH:mm:ss")
+      })
+    },
+  },
+  computed: {
+      aaa() {
+        let memberArray = Object.keys(this.member).map(key => {
+          const obj = this.member[key];         
+          obj["gcgKey"] = key.toString();
+          return obj;
+        });
+        if (this.lastData) {
+          memberArray.sort((a, b) => {
+            return this.lastData[b.gcgKey] - this.lastData[a.gcgKey];
+          });
+        }
+        return memberArray;
+      },
+    },
+  template: `
+  <div>
+    <h5 class="text-center">資料更新時間: {{time}}</h5>
+      <div v-for="(item, index) in aaa">
+        <member-info :member="item" :value="lastData[item.gcgKey]" :index="index"></member-info>
+      </div>
+    </div>
+    `,
+  created() {
+    this.getData()
+    setInterval(()=>{ this.getData() }, 5000)
+  },
+})
+      </script>
+
+</body>
+</html>
